@@ -5,20 +5,18 @@
 
 연구보고서 「사라지는 동네, 남는 동네 — 일자리와 청년 유출로 본 지방소멸위험」의
 수치를 한 화면에서 볼 수 있는 대시보드입니다.
-Flask 자기소개 스타터에서 출발했고, 원래의 자기소개 페이지는 `/me` 주소에 그대로 남아 있습니다.
+
+**바로 보기 → https://rbnsng7.github.io/team-LeeDanWoo-and-Idle/**
 
 ## 폴더 구조
 
 ```
-starter_flask/
-├── app.py             ← Flask 서버 ( /  대시보드,  /me  자기소개 )
-├── index.html         ← 대시보드 본체 (정적 파일 — GitHub Pages에서 바로 열림)
-├── requirements.txt
-├── templates/
-│   └── index.html     ← 원래의 자기소개 페이지 (건드리지 않음)
+team-LeeDanWoo-and-Idle/
+├── index.html         ← 대시보드 본체. 이 파일 하나가 전부다
+├── qr.png / qr.svg    ← 위 주소로 가는 QR 코드 (보고서 붙여넣기용)
+├── .nojekyll          ← GitHub Pages가 파일을 건드리지 않게 하는 표시
 └── static/
-    ├── dashboard.css  ← 대시보드 디자인
-    ├── style.css      ← 자기소개 페이지 디자인 (따로 분리)
+    ├── dashboard.css  ← 디자인 (색·글꼴·배치 전부)
     ├── data.js        ← 보고서에서 옮긴 수치 데이터 (출처 포함)
     ├── charts.js      ← 차트 4종 (React 디자인을 vanilla JS + SVG로 변환)
     ├── calc.js        ← 소멸위험지수 계산기 (조절 막대 → 지수·등급 계산)
@@ -26,44 +24,67 @@ starter_flask/
     └── fonts/
 ```
 
-## 내 컴퓨터에서 실행하기
+## 실행 방법 — 설치할 것이 없습니다
 
+**순수 정적 사이트라 서버가 필요 없습니다.** 파이썬도, Node.js도, 빌드도 없습니다.
+
+| 언제 | 어떻게 |
+|---|---|
+| 발표장에서 관객에게 | QR 찍기 → https://rbnsng7.github.io/team-LeeDanWoo-and-Idle/ |
+| 인터넷이 안 될 때 | `index.html` **더블클릭** — 차트·계산기 전부 그대로 작동 |
+| 내용을 고친 뒤 확인 | `index.html` 더블클릭 후 `Ctrl + F5` (새로고침) |
+
+이게 가능한 이유는 **외부에서 받아오는 것이 하나도 없기** 때문입니다.
+CDN 스크립트도, 서버에서 데이터를 불러오는 코드도 없고, 모든 경로가 상대경로(`static/...`)입니다.
+그래서 USB에 폴더째 복사해 가도 그대로 열립니다 — 학교 와이파이가 막힐 때를 대비한 보험입니다.
+
+> 예전에는 `app.py`(Flask)로 서버를 띄웠지만, 어차피 정적 파일을 그대로 내보내기만 해서
+> 하는 일이 없었습니다. GitHub Pages로 배포하면서 삭제했습니다.
+> (기록이 필요하면 `git log`에 그대로 남아 있습니다)
+
+## QR 코드
+
+폴더 안에 이미 만들어져 있습니다. 담긴 주소는
+`https://rbnsng7.github.io/team-LeeDanWoo-and-Idle/` 입니다.
+
+| 파일 | 언제 쓰나 |
+|---|---|
+| `qr.png` | 한글(HWP)·워드에 붙여넣기. 900×900px |
+| `qr.svg` | 크게 인쇄할 때. 아무리 키워도 안 깨짐 (포스터·현수막용) |
+
+만들 때 확인한 것:
+
+- 오류정정 **Q(25%)** 수준으로 만들어, 종이가 구겨지거나 프린터 상태가 나빠도 읽힙니다
+- 실제로 디코딩해서 주소가 정확히 나오는지 확인했습니다
+- **150×150px까지 줄여도** 읽힙니다. 보고서에서는 **2cm × 2cm 이상**으로 넣으세요
+- QR 둘레의 흰 여백은 지우면 안 됩니다. 스캐너가 그 여백으로 QR을 찾습니다
+
+주소가 바뀌면 다시 만들어야 합니다.
+
+```bash
+python -m pip install segno
 ```
-pip install -r requirements.txt   (처음 한 번만)
-python app.py
+
+```bash
+python -c "import segno; segno.make('https://rbnsng7.github.io/team-LeeDanWoo-and-Idle/', error='q').save('qr.png', scale=20, border=4)"
 ```
 
-브라우저에서 http://127.0.0.1:5000 접속. 종료는 터미널에서 `Ctrl + C`.
-대시보드는 순수 정적 파일이라 `index.html`을 그냥 더블클릭해도 열립니다.
+## 내용을 고친 뒤 다시 올리기
 
-## GitHub에 올리고 QR 만들기
-
-이 폴더는 이미 git 저장소로 만들어져 있고 (`git init` 완료, 첫 커밋 완료),
-원격 주소도 `https://github.com/rbnsng7/team-LeeDanWoo-and-Idle.git` 로 연결되어 있습니다.
-
-1. **GitHub에 빈 저장소 만들기** — github.com → 오른쪽 위 `+` → `New repository`
-   - Repository name: `team-LeeDanWoo-and-Idle`
-   - **Public** 선택 (무료 계정은 공개 저장소만 Pages가 됩니다)
-   - **"Add a README file" 체크 해제** — 이미 README가 있어서 체크하면 충돌합니다
-2. **올리기** — 이 폴더에서 아래 명령 실행. 처음 한 번은 브라우저가 열려 GitHub 로그인을 물어봅니다.
-   ```
-   git push -u origin main
-   ```
-3. **GitHub Pages 켜기** — 저장소의 Settings → Pages → Branch를 `main` / `(root)`로 선택 후 Save.
-   1~2분 뒤 https://rbnsng7.github.io/team-LeeDanWoo-and-Idle/ 에서 대시보드가 열립니다.
-4. **QR 만들기** — 아래 주소를 브라우저에 붙여넣으면 QR 이미지가 나옵니다.
-   저장해서 보고서 [팀이 채울 부분]에 붙여 넣으세요.
-   ```
-   https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://rbnsng7.github.io/team-LeeDanWoo-and-Idle/
-   ```
-
-이후에 내용을 고쳤을 때는 세 줄이면 됩니다.
-
-```
+```bash
 git add -A
+```
+
+```bash
 git commit -m "무엇을 고쳤는지 한 줄"
+```
+
+```bash
 git push
 ```
+
+푸시하고 1~2분 뒤에 Pages 주소에 반영됩니다.
+바로 안 바뀌면 브라우저에서 `Ctrl + F5`로 강력 새로고침 하세요.
 
 ## 대시보드 구성 (보고서 Ⅲ-2 요구사항 반영)
 
@@ -121,11 +142,11 @@ blue `#3987e5`, orange `#d95926`, aqua `#199e70` (배경 `#141414` 기준).
 
 | 증상 | 해결 |
 |---|---|
-| `'python'은(는) 내부 또는 외부 명령...` | Python 설치 시 "Add to PATH" 체크 안 함 → 재설치 또는 py 명령 사용 |
-| `ModuleNotFoundError: No module named 'flask'` | `pip install flask` 실행 |
-| `Address already in use` / 포트 오류 | 이미 켜져 있는 서버(다른 터미널)를 Ctrl+C로 끄기 |
-| 페이지가 안 바뀜 | 브라우저 새로고침(Ctrl+F5). 그래도 안 되면 서버 껐다 켜기 |
-| 조절 막대를 움직여도 숫자가 그대로 | `static/calc.js` 파일이 빠졌는지 확인. 이 경우에도 영도구 기준값(23.4 · 경계)은 그대로 보입니다 |
+| 고친 내용이 화면에 안 나옴 | 브라우저에서 `Ctrl + F5` (그냥 새로고침 말고 강력 새로고침) |
+| 글씨만 나오고 디자인이 없음 | `static` 폴더를 `index.html`과 **같은 위치**에 뒀는지 확인. 폴더째 옮겨야 합니다 |
+| 차트가 안 보임 | `static/charts.js`나 `static/data.js`가 빠진 경우. `F12` → Console 탭에 빨간 글씨가 있는지 확인 |
+| 조절 막대를 움직여도 숫자가 그대로 | `static/calc.js`가 빠진 경우. 이때도 영도구 기준값(23.4 · 경계)은 그대로 보입니다 |
+| 팀 이름 글꼴이 다르게 나옴 | `static/fonts/` 폴더가 빠진 경우 (5.4MB라 복사가 느릴 수 있음) |
 
 ### GitHub에 올릴 때
 
