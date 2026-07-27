@@ -38,23 +38,32 @@ python app.py
 
 ## GitHub에 올리고 QR 만들기
 
-1. **GitHub에 새 저장소 만들기** — 보고서에 적은 이름 그대로: `team-LeeDanWoo-and-Idle`
-2. **이 폴더를 업로드** (웹에서 "uploading an existing file"로 전부 끌어다 놓거나, git 사용 시):
+이 폴더는 이미 git 저장소로 만들어져 있고 (`git init` 완료, 첫 커밋 완료),
+원격 주소도 `https://github.com/rbnsng7/team-LeeDanWoo-and-Idle.git` 로 연결되어 있습니다.
+
+1. **GitHub에 빈 저장소 만들기** — github.com → 오른쪽 위 `+` → `New repository`
+   - Repository name: `team-LeeDanWoo-and-Idle`
+   - **Public** 선택 (무료 계정은 공개 저장소만 Pages가 됩니다)
+   - **"Add a README file" 체크 해제** — 이미 README가 있어서 체크하면 충돌합니다
+2. **올리기** — 이 폴더에서 아래 명령 실행. 처음 한 번은 브라우저가 열려 GitHub 로그인을 물어봅니다.
    ```
-   git init
-   git add .
-   git commit -m "지방소멸위험 연구 대시보드"
-   git branch -M main
-   git remote add origin https://github.com/<내아이디>/team-LeeDanWoo-and-Idle.git
    git push -u origin main
    ```
 3. **GitHub Pages 켜기** — 저장소의 Settings → Pages → Branch를 `main` / `(root)`로 선택 후 Save.
-   1~2분 뒤 `https://<내아이디>.github.io/team-LeeDanWoo-and-Idle/` 에서 대시보드가 열립니다.
-4. **QR 만들기** — 아래 주소의 `<배포주소>` 자리에 위 Pages 주소를 넣고 브라우저로 열면
-   QR 이미지가 나옵니다. 저장해서 보고서 [팀이 채울 부분]에 붙여 넣으세요.
+   1~2분 뒤 https://rbnsng7.github.io/team-LeeDanWoo-and-Idle/ 에서 대시보드가 열립니다.
+4. **QR 만들기** — 아래 주소를 브라우저에 붙여넣으면 QR 이미지가 나옵니다.
+   저장해서 보고서 [팀이 채울 부분]에 붙여 넣으세요.
    ```
-   https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=<배포주소>
+   https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://rbnsng7.github.io/team-LeeDanWoo-and-Idle/
    ```
+
+이후에 내용을 고쳤을 때는 세 줄이면 됩니다.
+
+```
+git add -A
+git commit -m "무엇을 고쳤는지 한 줄"
+git push
+```
 
 ## 대시보드 구성 (보고서 Ⅲ-2 요구사항 반영)
 
@@ -117,3 +126,13 @@ blue `#3987e5`, orange `#d95926`, aqua `#199e70` (배경 `#141414` 기준).
 | `Address already in use` / 포트 오류 | 이미 켜져 있는 서버(다른 터미널)를 Ctrl+C로 끄기 |
 | 페이지가 안 바뀜 | 브라우저 새로고침(Ctrl+F5). 그래도 안 되면 서버 껐다 켜기 |
 | 조절 막대를 움직여도 숫자가 그대로 | `static/calc.js` 파일이 빠졌는지 확인. 이 경우에도 영도구 기준값(23.4 · 경계)은 그대로 보입니다 |
+
+### GitHub에 올릴 때
+
+| 증상 | 해결 |
+|---|---|
+| `git push` 했더니 창이 떠서 로그인하라고 함 | 정상입니다. 처음 한 번만 GitHub 로그인하면 다음부터는 안 물어봅니다 |
+| `Repository not found` | github.com에 저장소를 아직 안 만들었거나 이름이 다름. 이름은 정확히 `team-LeeDanWoo-and-Idle` |
+| `failed to push some refs` / `rejected` | 저장소 만들 때 "Add a README file"을 체크했을 때 남. `git pull --rebase origin main` 실행 후 다시 `git push` |
+| Pages 주소가 404 | ① Settings → Pages 설정을 저장했는지 ② 저장 후 1~2분 기다렸는지 ③ 주소 끝에 `/`를 빼먹지 않았는지 |
+| 페이지는 열리는데 글씨만 나오고 디자인이 없음 | `static/` 폴더가 통째로 안 올라간 경우. `git status`로 빠진 파일 확인 |
