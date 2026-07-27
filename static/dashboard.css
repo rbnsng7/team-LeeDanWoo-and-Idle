@@ -665,20 +665,60 @@ section.block { margin-top: var(--gap-section); }
 .finding .t { font-size: clamp(1rem, 2.2vw, 1.15rem); font-weight: 600; letter-spacing: -0.02em; }
 .finding .d { margin-top: 6px; font-size: 0.88rem; color: var(--ink-2); }
 
+/* =========================================================
+   07 · 정책 제안
+   보고서 Ⅳ장의 핵심이라 결론 안에 묻어두지 않고 독립 섹션으로 뺐다.
+   ========================================================= */
 .proposals {
-  margin-top: 40px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr));
+  gap: 18px;
 }
+
 .proposal {
   border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 26px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent);
+  border-radius: 20px;
+  padding: clamp(26px, 3.2vw, 36px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent);
+  display: flex;
+  flex-direction: column;
 }
-.proposal .who { font-size: 0.72rem; letter-spacing: 0.16em; color: var(--ink-3); }
-.proposal p { margin-top: 12px; font-size: 0.98rem; letter-spacing: -0.01em; }
+
+.proposal .who {
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--ink-3);
+}
+
+.proposal .to {
+  margin-top: 10px;
+  font-size: clamp(1.15rem, 2.6vw, 1.45rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.proposal .body {
+  margin-top: 16px;
+  font-size: clamp(0.98rem, 2vw, 1.08rem);
+  letter-spacing: -0.01em;
+  line-height: 1.7;
+}
+.proposal .body strong { font-weight: 700; }
+
+/* 근거 줄은 카드 맨 아래에 붙여 두 카드의 높이가 달라도 나란히 보이게 한다 */
+.proposal .why {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  font-size: 0.8rem;
+  color: var(--ink-2);
+  line-height: 1.7;
+}
+.proposal .why b {
+  color: var(--ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
 
 /* =========================================================
    표로 보기
@@ -715,7 +755,7 @@ th { color: var(--ink-3); font-weight: 600; font-size: 0.78rem; }
 caption { caption-side: bottom; text-align: left; color: var(--ink-3); font-size: 0.74rem; padding-top: 12px; }
 
 /* =========================================================
-   07 · 팀
+   08 · 팀
    ========================================================= */
 .team-name {
   font-family: "Cafe24 Supermagic", var(--sans);
