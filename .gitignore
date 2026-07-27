@@ -1,0 +1,15 @@
+# 파이썬이 자동으로 만드는 것
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 편집기 · 도구 설정 (내 컴퓨터에서만 쓰는 것)
+.claude/
+.vscode/
+.idea/
+
+# 윈도우 · macOS 가 몰래 만드는 잡파일
+Thumbs.db
+desktop.ini
+.DS_Store
