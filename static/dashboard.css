@@ -49,6 +49,11 @@ body {
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  /* 한글은 낱글자 단위로 잘려서 '지방소 / 멸위험' 처럼 되기 쉽다.
+     keep-all 로 띄어쓰기에서만 줄을 바꾼다. break-word 는 한 낱말이
+     줄 하나에도 안 들어갈 때만 쪼개므로 anywhere 보다 덜 공격적이다. */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* =========================================================
@@ -66,22 +71,35 @@ body {
   padding: clamp(40px, 7vh, 72px) var(--pad) clamp(32px, 5vh, 52px);
 }
 
-/* 왼쪽 위에서 옅게 퍼지는 빛 — 정지된 그라디언트 한 장 */
+/* 배경 물결 (static/wave.js 가 그린다).
+   장식이라 aria-hidden 이고, 이 파일이 없어도 표지는 그대로 보인다. */
+#hero-wave {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* 물결 위에 글자가 올라가므로 어둡게 한 겹 덮어 읽기 쉽게 만든다.
+   왼쪽(글자가 있는 쪽)을 더 진하게 깐다. */
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(1100px 550px at 15% 5%, rgba(255, 255, 255, 0.055), transparent 62%);
+  background:
+    linear-gradient(100deg, rgba(10, 10, 10, 0.9) 0%, rgba(10, 10, 10, 0.62) 42%, rgba(10, 10, 10, 0.1) 100%);
   pointer-events: none;
 }
 
-/* 아래쪽으로 갈수록 배경이 페이지 색과 자연스럽게 이어지도록 */
+/* 위아래 가장자리를 페이지 색으로 눌러 물결이 잘린 티가 안 나게 한다 */
 .hero::after {
   content: "";
   position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 24vh;
-  background: linear-gradient(to bottom, transparent, var(--bg));
+  inset: 0;
+  background:
+    linear-gradient(to bottom, var(--bg) 0%, transparent 18%, transparent 72%, var(--bg) 100%);
   pointer-events: none;
 }
 
@@ -159,6 +177,63 @@ body {
 
 .cta .arrow { opacity: 0.6; }
 .cta:hover .arrow { opacity: 1; }
+
+/* 표지는 이 한 화면이 전부다. 스크롤할 것이 없으니 막아 둔다 */
+body.cover { overflow: hidden; }
+
+/* =========================================================
+   본문 페이지 상단 바 (dashboard.html)
+   표지로 돌아가는 길. 스크롤해도 위에 붙어 있는다.
+   ========================================================= */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(10, 10, 10, 0.82);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+/* .wrap 의 padding: 0 이 나중에 선언돼 있어서, 선택자를 한 단계 겹쳐
+   우선순위를 올려야 위아래 여백이 먹는다 */
+.topbar .topbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink-2);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+.back:hover { color: var(--ink); }
+.back .arrow { opacity: 0.6; }
+.back:hover .arrow { opacity: 1; }
+
+.topbar-title {
+  margin-left: auto;
+  font-size: 0.82rem;
+  color: var(--ink-3);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 상단 바 바로 아래에 첫 섹션이 붙지 않도록 여백을 조금 줄인다 */
+.topbar + .wrap > section.block:first-child { margin-top: clamp(48px, 7vw, 88px); }
+
+/* 앵커로 이동할 때 상단 바에 제목이 가리지 않게 */
+section.block { scroll-margin-top: 72px; }
 
 /* =========================================================
    본문 레이아웃

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>데이터로 보기 · 사라지는 동네, 남는 동네</title>
+  <meta name="description" content="일자리와 청년 유출로 본 지방소멸위험 — 부산정보영재교육원 이단우와아이들 팀 연구 대시보드">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="stylesheet" href="static/dashboard.css">
+  <!-- JS가 켜져 있을 때만 스크롤 등장 효과를 쓴다.
+       이 클래스가 없으면 .reveal 섹션이 처음부터 그냥 보이므로,
+       스크립트가 실패해도 본문이 사라지지 않는다. -->
+  <script>document.documentElement.classList.add("js-on");</script>
+</head>
+<body>
+
+  <!-- 표지로 돌아가는 줄. 스크롤해도 위에 붙어 있는다 -->
+  <div class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="back" href="index.html"><span class="arrow">←</span>표지로</a>
+      <p class="topbar-title">사라지는 동네, 남는 동네</p>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- ══════════════ 01 연구 질문 ══════════════ -->
+    <section class="block reveal" id="question">
+      <div class="sec-head">
+        <span class="sec-num">01</span>
+        <h2 class="sec-title">연구 질문과 가설</h2>
+      </div>
+
+      <p class="lead">왜 어떤 동네는 사라지고, <em>어떤 동네는 남는가?</em></p>
+
+      <div class="chain">
+        <div class="chain-node">
+          <p class="step">원인</p>
+          <p class="what">양질의 일자리 부족</p>
+          <p class="how">제조업 취업자 비중(%)으로 측정</p>
+        </div>
+        <div class="chain-link">
+          <span class="ar">→</span>
+          <span class="r">r = +0.51</span>
+        </div>
+        <div class="chain-node">
+          <p class="step">경로</p>
+          <p class="what">청년(20~39세) 순유출</p>
+          <p class="how">20~39세 여성 비중(%) · 순이동자 수(명)</p>
+        </div>
+        <div class="chain-link">
+          <span class="ar">→</span>
+          <span class="r">r = +0.95</span>
+        </div>
+        <div class="chain-node">
+          <p class="step">결과</p>
+          <p class="what">소멸위험지수 악화</p>
+          <p class="how">20~39세 여성 ÷ 65세 이상 × 100</p>
+        </div>
+      </div>
+
+      <div class="note-card">
+        <strong>판정 기준을 분석 전에 미리 고정했습니다 (2026.7.25 사전 등록).</strong><br>
+        전국 — 청년 여성 비중 하위 5곳 중 4곳 이상이 소멸위험지수 20 미만이면 가설 지지.<br>
+        부산 — 2025년 개편 지수에서 부산 16개 구·군에는 '위험' 단계가 없어, 절대 등급 대신
+        부산 안의 상대 순위로 판정합니다.
+      </div>
+    </section>
+
+    <!-- ══════════════ 02 계산기 ══════════════
+         슬라이더·설명·기본 결과가 전부 HTML에 들어 있고,
+         calc.js는 값을 바꿔 끼우는 일만 한다. -->
+    <section class="block reveal" id="calc">
+      <div class="sec-head">
+        <span class="sec-num">02</span>
+        <h2 class="sec-title">소멸위험지수, 직접 계산해보기</h2>
+        <p class="sec-desc">막대 두 개를 움직여 보세요. 소멸위험지수는
+          <strong>20~39세 여성 ÷ 65세 이상 × 100</strong>입니다. 두 집단의 수가 같으면 100,
+          젊은 여성이 절반뿐이면 50이 됩니다. 숫자가 낮을수록 그 동네가 사라질 위험이 큽니다.</p>
+      </div>
+
+      <div class="calc">
+        <div class="calc-controls">
+          <div class="field">
+            <label for="s-young">20~39세 여성 비중</label>
+            <div class="slider">
+              <input type="range" id="s-young" min="4" max="14" step="0.1" value="8">
+              <output class="slider-bubble" for="s-young">8.0%</output>
+            </div>
+            <p class="field-help">전체 인구 100명 중 20~39세 여성이 몇 명인지</p>
+          </div>
+
+          <div class="field">
+            <label for="s-aged">65세 이상 비중</label>
+            <div class="slider">
+              <input type="range" id="s-aged" min="18" max="46" step="0.1" value="34.2">
+              <output class="slider-bubble" for="s-aged">34.2%</output>
+            </div>
+            <p class="field-help">전체 인구 100명 중 65세 이상이 몇 명인지</p>
+          </div>
+
+          <div class="presets">
+            <span class="presets-label">예시로 맞춰보기</span>
+            <button type="button" data-young="8.0" data-aged="34.2">부산 영도구</button>
+            <button type="button" data-young="11.0" data-aged="24.9">부산 남구</button>
+            <button type="button" data-young="4.8" data-aged="43.4">농어촌 낙후지역 평균</button>
+          </div>
+        </div>
+
+        <div class="calc-result">
+          <!-- 여기 적힌 값은 슬라이더 초기값(영도구)의 계산 결과다.
+               JS가 실행되면 같은 자리에 새 값이 들어간다. -->
+          <p class="calc-formula" id="calc-formula">8.0 ÷ 34.2 × 100</p>
+          <p class="calc-value" id="calc-value">23.4</p>
+          <p class="calc-badge" id="calc-badge" style="--tone: var(--status-warning)">경계</p>
+          <div class="calc-gauge">
+            <span class="calc-needle" id="calc-needle"></span>
+            <span class="calc-mark" style="--at: 33.33%"><i>20</i></span>
+            <span class="calc-mark" style="--at: 66.67%"><i>40</i></span>
+          </div>
+          <p class="calc-compare" id="calc-compare">지금 값은 부산 <strong>영도구(23.3)</strong>와 거의 같은 수준입니다.</p>
+        </div>
+      </div>
+
+      <p class="card-src">등급 기준: 한국고용정보원(2025) 개편 소멸위험지수 · 계산식은 보고서 정의 그대로</p>
+    </section>
+
+    <!-- ══════════════ 03 한눈에 보기 ══════════════ -->
+    <section class="block reveal">
+      <div class="sec-head">
+        <span class="sec-num">03</span>
+        <h2 class="sec-title">한눈에 보기</h2>
+        <p class="sec-desc">보고서 본문에서 인용한 핵심 수치입니다. 각 숫자 아래에 출처를 함께 적었습니다.</p>
+      </div>
+      <div class="stats" id="stats"></div>
+    </section>
+
+    <!-- ══════════════ 04 데이터 ══════════════ -->
+    <section class="block reveal">
+      <div class="sec-head">
+        <span class="sec-num">04</span>
+        <h2 class="sec-title">데이터로 본 부산</h2>
+        <p class="sec-desc">차트 위에 마우스를 올리면 자세한 값이 나옵니다. 색은 원도심 4개 구(영도·서·중·동)와
+          그 외를 구분할 때만 씁니다.</p>
+      </div>
+
+      <div class="charts">
+        <article class="card">
+          <div class="card-head">
+            <h3>부산 9개 구 소멸위험지수</h3>
+            <span class="tag">2025.6 · 위험한 순</span>
+          </div>
+          <p class="card-sub">★ 점선은 개편 지수의 등급 경계 — 20 미만 위험, 40~60 관리</p>
+          <div class="chart" id="chart-line"></div>
+          <p class="card-src">자료: 한국고용정보원(2025) 표 4</p>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <h3>청년 여성 비중 ↔ 소멸위험지수</h3>
+            <span class="tag">r = +0.67</span>
+          </div>
+          <p class="card-sub">청년 여성이 적은 구일수록 지수가 낮다 — 즉 소멸위험이 크다</p>
+          <div class="chart" id="chart-scatter"></div>
+          <p class="card-src">자료: 한국고용정보원(2025) 표 4</p>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <h3>부산 9개 구 고령인구 비중</h3>
+            <span class="tag">2025.6</span>
+          </div>
+          <p class="card-sub">원도심 4개 구가 모두 30%를 넘는다</p>
+          <div class="chart" id="chart-bar"></div>
+          <p class="card-src">자료: 한국고용정보원(2025) 표 4</p>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <h3>소멸위험 시군구 3유형</h3>
+            <span class="tag">전국 55곳</span>
+          </div>
+          <p class="card-sub">같은 '소멸위험'이라도 원인이 다르다 — 부산 원도심은 원도심 쇠퇴형</p>
+          <div class="chart" id="chart-donut"></div>
+          <p class="card-src">자료: 한국고용정보원(2025) 표 2·3·4</p>
+        </article>
+      </div>
+
+      <details class="table-box">
+        <summary>같은 데이터를 표로 보기 — 부산 9개 구 상세 지표 (2025.6)</summary>
+        <div class="table-scroll"><table id="data-table"></table></div>
+      </details>
+    </section>
+
+    <!-- ══════════════ 05 상관계수 ══════════════ -->
+    <section class="block reveal">
+      <div class="sec-head">
+        <span class="sec-num">05</span>
+        <h2 class="sec-title">두 개의 고리</h2>
+        <p class="sec-desc">상관계수 r은 두 값이 함께 움직이는 정도입니다. 1에 가까울수록 같은 방향으로
+          강하게 움직이고, 음수면 반대 방향으로 움직입니다. 아래 막대는 부호를 뺀 크기(|r|)입니다.</p>
+      </div>
+      <div class="corr" id="corr"></div>
+    </section>
+
+    <!-- ══════════════ 06 결론 ══════════════ -->
+    <section class="block reveal">
+      <div class="sec-head">
+        <span class="sec-num">06</span>
+        <h2 class="sec-title">발견한 것과 제안</h2>
+      </div>
+
+      <div class="findings">
+        <div class="finding">
+          <span class="n">01</span>
+          <div>
+            <p class="t">'청년 → 소멸위험' 고리는 아주 뚜렷하다</p>
+            <p class="d">55개 시군구에서 r = +0.95. 청년 감소는 소멸위험지수와 거의 같은 것을 재고 있다.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <span class="n">02</span>
+          <div>
+            <p class="t">'일자리 → 청년' 고리는 부분적으로만 설명한다</p>
+            <p class="d">제조업 취업자 비중과는 r = +0.51. 방향은 맞지만 일자리만으로 청년 유출을 다 설명하지는 못한다.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <span class="n">03</span>
+          <div>
+            <p class="t">일자리의 '양'이 아니라 '질'을 재야 한다</p>
+            <p class="d">고용률로 보면 오히려 r = -0.85가 나온다. 농어촌은 자영 농업 때문에 고용률이 73.1%까지
+              오르지만 청년 여성은 4.8%뿐이다. 그래서 지표를 제조업 취업자 비중으로 좁혔다.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <span class="n">04</span>
+          <div>
+            <p class="t">비율만 보면 안 되고 실제 인구수를 함께 봐야 한다</p>
+            <p class="d">중구는 청년 여성 12.1%로 부산에서 가장 높은데도 지수는 36.5에 머문다. 유소년 비중이
+              3.7%뿐이라 다음 세대가 이어지지 않기 때문이다.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <span class="n">05</span>
+          <div>
+            <p class="t">부산 원도심은 이미 다른 단계에 있다</p>
+            <p class="d">영도·서·중·동구는 고령화율이 30%를 넘고, 2000~2024년 사이 인구가 33~44% 줄었다.
+              영도구는 소멸위험지수 23.3으로 부산에서 가장 위험하다.</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ══════════════ 07 정책 제안 ══════════════
+         연구보고서 Ⅳ-1 '결론 및 제안'의 정책 제안 ①② 를 그대로 옮긴 섹션. -->
+    <section class="block reveal" id="policy">
+      <div class="sec-head">
+        <span class="sec-num">07</span>
+        <h2 class="sec-title">정책 제안</h2>
+        <p class="sec-desc">앞의 분석에서 나온 두 가지 제안입니다. 각 제안 아래에는 그 제안을 뒷받침하는
+          이 대시보드의 수치를 함께 적었습니다.</p>
+      </div>
+
+      <div class="proposals">
+        <article class="proposal">
+          <p class="who">제안 01</p>
+          <p class="to">정부 · 부산시에</p>
+          <p class="body">지방소멸대응기금을 축제·건물 같은 일회성 사업보다
+            <strong>'양질의 일자리 만들기'에 우선 배분</strong>하도록
+            평가 기준을 바꿀 것을 제안합니다.</p>
+          <p class="why">근거 — 제조업 취업자 비중 ↔ 청년 여성 비중 <b>r = +0.51</b>,
+            청년 여성 비중 ↔ 소멸위험지수 <b>r = +0.95</b> (전국 55개 시군구)</p>
+        </article>
+
+        <article class="proposal">
+          <p class="who">제안 02</p>
+          <p class="to">부산 원도심에</p>
+          <p class="body">영도·중·동·서구에는 공간 재생과 함께
+            <strong>청년이 머물 일자리와 정주 지원을 병행</strong>할 것을 제안합니다.</p>
+          <p class="why">근거 — 원도심 4개 구 고령인구 비중 <b>모두 30% 이상</b>,
+            2000~2024년 인구 <b>33~44% 감소</b>, 영도구 소멸위험지수 <b>23.3</b>으로 부산 최저</p>
+        </article>
+      </div>
+
+      <p class="card-src">자료: 팀 연구보고서 Ⅳ-1 결론 및 제안</p>
+    </section>
+
+    <!-- ══════════════ 08 팀 ══════════════ -->
+    <section class="block reveal">
+      <div class="sec-head">
+        <span class="sec-num">08</span>
+        <h2 class="sec-title">만든 사람들</h2>
+      </div>
+      <p class="team-name">이단우와아이들</p>
+      <div class="members">
+        <div class="member"><p class="nm">이단우</p><p class="ro">조장</p></div>
+        <div class="member"><p class="nm">송예겸</p><p class="ro">보고서 작성 · 대시보드</p></div>
+        <div class="member"><p class="nm">황석주</p><p class="ro">연구자</p></div>
+        <div class="member"><p class="nm">임지온</p><p class="ro">연구자</p></div>
+      </div>
+      <p class="team-foot">부산정보영재교육원 중2 Data AI반 · 지도교사 유근찬 선생님</p>
+    </section>
+  </div>
+
+  <!-- ══════════════ 출처 ══════════════ -->
+  <footer class="site-foot">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="sec-num">출처</span>
+        <h2 class="sec-title">참고 문헌 · 데이터</h2>
+      </div>
+      <ol class="sources-list" id="sources"></ol>
+      <p class="foot-note">
+        이 대시보드의 모든 수치는 팀 연구보고서 「사라지는 동네, 남는 동네 — 일자리와 청년 유출로 본 지방소멸위험」에서 가져왔습니다.<br>
+        차트 디자인: 21st.dev의 React 컴포넌트를, 계산기의 조절 막대는 Radix UI Slider를
+        프레임워크 없는 JavaScript·CSS·SVG로 변환해 사용했습니다.<br>
+        © 2026 이단우와아이들
+      </p>
+    </div>
+  </footer>
+
+  <script src="static/data.js"></script>
+  <script src="static/charts.js"></script>
+  <script src="static/hero.js"></script>
+  <script src="static/calc.js"></script>
+  <script>
+    /* ---------- 요약 숫자 ---------- */
+    document.getElementById("stats").innerHTML = REPORT_DATA.stats.map((s) => `
+      <div class="stat">
+        <p class="k">${s.label}</p>
+        <p class="v">${s.value}</p>
+        <p class="s">${s.sub}</p>
+        <p class="src">${s.src}</p>
+      </div>`).join("");
+
+    /* ---------- 상관계수 (막대 길이는 부호를 뺀 |r|) ---------- */
+    document.getElementById("corr").innerHTML = REPORT_DATA.correlations.map((c) => `
+      <div class="corr-item">
+        <p class="r">${c.r}</p>
+        <p class="pair">${c.pair}</p>
+        <p class="note">${c.note}</p>
+        <div class="rbar"><span style="width:${Math.abs(parseFloat(c.r)) * 100}%"></span></div>
+      </div>`).join("");
+
+    /* ---------- 차트 4개 ---------- */
+    const GU = REPORT_DATA.busanGu;
+    const GROUPS = {
+      old:  { label: "원도심 (영도·서·중·동)", color: "var(--chart-2)" },
+      rest: { label: "그 외 5개 구",           color: "var(--chart-1)" },
+    };
+
+    renderLineChart(document.getElementById("chart-line"), {
+      data: [...GU].sort((a, b) => a.index - b.index)
+        .map((d) => ({ label: d.gu.replace("구", ""), y: d.index, change: d.popChange })),
+      levels: REPORT_DATA.levels,
+    });
+
+    renderScatterChart(document.getElementById("chart-scatter"), {
+      data: GU.map((d) => ({ x: d.youngF, y: d.index, label: d.gu,
+        group: d.oldTown ? "old" : "rest", aged: d.aged, popChange: d.popChange })),
+      groups: GROUPS,
+      xLabel: "20~39세 여성 비중 (%)",
+      yLabel: "소멸위험지수",
+      annotate: ["영도구", "중구", "남구"],
+    });
+
+    renderBarChart(document.getElementById("chart-bar"), {
+      data: [...GU].sort((a, b) => b.aged - a.aged)
+        .map((d) => ({ label: d.gu, value: d.aged, group: d.oldTown ? "old" : "rest" })),
+      groups: GROUPS,
+    });
+
+    renderDonutChart(document.getElementById("chart-donut"), {
+      data: REPORT_DATA.types.map((t) => ({ ...t, color: `var(--chart-${t.slot})` })),
+    });
+
+    /* ---------- 데이터 표 ---------- */
+    document.getElementById("data-table").innerHTML =
+      `<thead><tr><th>구</th><th>전체인구</th><th>고령 비중</th><th>20~39세 여성</th>
+       <th>제조업 취업자</th><th>인구증감 00~24</th><th>소멸위험지수</th></tr></thead><tbody>` +
+      GU.map((d) => `<tr class="${d.oldTown ? "row-old" : ""}">
+        <td>${d.gu}${d.oldTown ? " *" : ""}</td><td>${d.pop.toLocaleString()}명</td>
+        <td>${d.aged}%</td><td>${d.youngF}%</td><td>${d.manuf}%</td>
+        <td>${d.popChange}%</td><td>${d.index}</td></tr>`).join("") +
+      `</tbody><caption>* 표시는 원도심 4개 구 · 자료: 한국고용정보원(2025) 표 4</caption>`;
+
+    /* ---------- 출처 ---------- */
+    document.getElementById("sources").innerHTML =
+      REPORT_DATA.sources.map((s) => `<li>${s}</li>`).join("");
+  </script>
+</body>
+</html>
