@@ -214,7 +214,7 @@ function renderLineChart(container, { data, levels = [], height = 280 }) {
 }
 
 /* =========================================================
-   2) 산점도: 청년 여성 비중 vs 소멸위험지수 (부산 9개 구)
+   2) 산점도: 청년 비중 vs 소멸위험지수 (부산 9개 구)
    ========================================================= */
 function renderScatterChart(container, { data, groups, xLabel, yLabel, annotate = [], height = 300 }) {
   mountChart(container, (width) => {
@@ -361,7 +361,7 @@ function renderDonutChart(container, { data, height = 300 }) {
         tip.show(`<p class="tip-label">${d.name}</p>` +
           tipRow(d.color, "시군구 수", `${d.count}곳`) +
           tipRow("var(--ink-3)", "평균 소멸위험지수", fmt(d.index)) +
-          tipRow("var(--ink-3)", "20~39세 여성", fmt(d.youngF) + "%") +
+          tipRow("var(--ink-3)", "20~39세 청년", fmt(d.youngF) + "%") +
           tipRow("var(--ink-3)", "인구증감 00~24", `${d.popChange > 0 ? "+" : ""}${fmt(d.popChange)}%`),
           e.clientX, e.clientY);
       });
@@ -375,5 +375,91 @@ function renderDonutChart(container, { data, height = 300 }) {
     svgEl("text", { x: cx, y: cy + 18, "text-anchor": "middle", class: "donut-center-sub" }, svg)
       .textContent = "소멸위험 시군구";
     buildLegend(container, data.map((d) => ({ color: d.color, label: `${d.name} ${d.count}곳` })));
+  });
+}
+
+/* =========================================================
+   5) 가로 점 그래프: 시도별 청년 성비
+
+   성비는 100(남녀 같음)이 기준점인 값이라 막대로 그리면 안 된다.
+   막대는 0부터 재는 그림이어서, 93.9와 130.1을 0부터 그리면
+   차이가 실제보다 작아 보인다. 그래서 기준선(100)에서 값까지
+   선을 긋고 끝에 점을 찍는 방식으로 '기준에서 얼마나 벗어났는지'를 잰다.
+   ========================================================= */
+function renderDotPlot(container, { data, refs = [], groups, xLabel, rowH = 40 }) {
+  mountChart(container, (width) => {
+    const M = { top: 48, right: 44, bottom: 34, left: 52 };
+    const ih = rowH * data.length;
+    const height = M.top + ih + M.bottom;
+    const iw = width - M.left - M.right;
+    const svg = svgEl("svg", { viewBox: `0 0 ${width} ${height}`, class: "chart-svg" }, container);
+
+    const vals = [...data.map((d) => d.value), ...refs.map((r) => r.value)];
+    const pad = (Math.max(...vals) - Math.min(...vals)) * 0.14 || 5;
+    const xMin = Math.min(...vals) - pad, xMax = Math.max(...vals) + pad;
+    const x = (v) => M.left + ((v - xMin) / (xMax - xMin)) * iw;
+    const y = (i) => M.top + rowH * i + rowH / 2;
+
+    // 세로 눈금
+    for (const t of niceTicks(xMin, xMax, 5)) {
+      svgEl("line", { x1: x(t), x2: x(t), y1: M.top, y2: M.top + ih,
+        stroke: "var(--chart-grid)", "stroke-dasharray": "3 3" }, svg);
+      svgEl("text", { x: x(t), y: M.top + ih + 18, "text-anchor": "middle",
+        class: "tick-label" }, svg).textContent = fmt(t);
+    }
+    svgEl("text", { x: M.left + iw / 2, y: height - 4, "text-anchor": "middle",
+      class: "axis-label" }, svg).textContent = xLabel;
+
+    // 기준선 (100 = 남녀 같음, 전국 평균)
+    // 두 기준선이 가까워도 글자가 겹치지 않도록 라벨을 위아래 두 줄로 번갈아 놓는다
+    refs.forEach((r, i) => {
+      const c = r.tone || "var(--ink-3)";
+      const ly = M.top - 32 + (i % 2) * 16;
+      svgEl("line", { x1: x(r.value), x2: x(r.value), y1: ly + 5, y2: M.top + ih,
+        stroke: c, "stroke-dasharray": r.dash || "6 6", "stroke-width": 2, opacity: 0.85 }, svg);
+      svgEl("text", { x: x(r.value), y: ly, "text-anchor": "middle",
+        class: "level-label", fill: c }, svg).textContent = r.label;
+    });
+
+    const base = refs.length ? refs[0].value : xMin;   // 선을 긋기 시작할 기준값
+
+    data.forEach((d, i) => {
+      const g = groups[d.group];
+      const cy = y(i);
+
+      svgEl("text", { x: M.left - 12, y: cy + 4, "text-anchor": "end",
+        class: "row-label" }, svg).textContent = d.label;
+
+      // 기준선(100)에서 값까지 잇는 막대 — 벗어난 거리를 나타낸다
+      svgEl("line", { x1: x(base), x2: x(d.value), y1: cy, y2: cy,
+        stroke: g.color, "stroke-width": 2, "stroke-linecap": "round" }, svg);
+
+      const dot = svgEl("circle", { cx: x(d.value), cy, r: 6, fill: g.color,
+        stroke: "var(--card)", "stroke-width": 2, class: "scatter-dot" }, svg);
+
+      // 값은 점의 바깥쪽(기준선 반대편)에 적어 선과 겹치지 않게 한다
+      const right = d.value >= base;
+      svgEl("text", { x: x(d.value) + (right ? 13 : -13), y: cy + 4,
+        "text-anchor": right ? "start" : "end", class: "point-label" }, svg)
+        .textContent = fmt(d.value);
+
+      dot.addEventListener("mousemove", (e) => {
+        dot.setAttribute("r", 8);
+        const diff = d.value - base;
+        // 지역 이름과 묶음 이름이 같으면(부산) 두 번 적지 않는다
+        const sub = g.label === d.label ? "" : ` <span class="tip-sub">${g.label}</span>`;
+        tip.show(`<p class="tip-label">${d.label}${sub}</p>` +
+          tipRow(g.color, "청년 성비", fmt(d.value)) +
+          tipRow("var(--ink-3)", "100과의 차이", `${diff > 0 ? "+" : ""}${fmt(diff)}`) +
+          (d.note ? `<p class="tip-note">${d.note}</p>` : ""),
+          e.clientX, e.clientY);
+      });
+      dot.addEventListener("mouseleave", () => {
+        dot.setAttribute("r", 6);
+        tip.hide();
+      });
+    });
+
+    buildLegend(container, Object.values(groups));
   });
 }

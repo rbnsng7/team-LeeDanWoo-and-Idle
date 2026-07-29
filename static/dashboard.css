@@ -359,6 +359,73 @@ section.block { margin-top: var(--gap-section); }
   font-size: 0.88rem;
 }
 .note-card strong { color: var(--ink); font-weight: 600; }
+.note-card b { color: var(--ink); font-weight: 600; }
+
+/* =========================================================
+   03 · 청년 성비
+   왼쪽에 점 그래프, 오른쪽에 읽는 법. 좁아지면 위아래로 쌓인다.
+   ========================================================= */
+.ratio {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.ratio-points {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.ratio-point {
+  background: var(--bg);
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 10px;
+  padding: 16px 2px;
+  align-items: start;
+}
+.ratio-point .n {
+  color: var(--ink-3);
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+  padding-top: 3px;
+}
+.ratio-point p { font-size: 0.9rem; color: var(--ink-2); }
+.ratio-point b { color: var(--ink); font-weight: 600; }
+
+/* 화면의 '청년'이 원자료로는 무엇인지 밝히는 줄 */
+.ratio-disclosure {
+  margin-top: 20px;
+  font-size: 0.8rem;
+  color: var(--ink-3);
+  line-height: 1.8;
+}
+.ratio-disclosure b { color: var(--ink-2); font-weight: 600; }
+
+/* 점 그래프의 지역 이름 (SVG 안 글자) */
+.row-label {
+  fill: var(--ink-2);
+  font-size: 12px;
+  font-family: var(--sans);
+}
+
+/* 툴팁 안의 한 줄 설명 */
+.tip-note {
+  margin-top: 7px;
+  padding-top: 7px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-3);
+  font-size: 11px;
+  max-width: 17rem;
+  white-space: normal;
+}
+
+@media (max-width: 900px) {
+  .ratio { grid-template-columns: 1fr; }
+}
 
 /* =========================================================
    02 · 소멸위험지수 계산기
